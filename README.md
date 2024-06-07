@@ -31,5 +31,7 @@ my_cli_tool --name Flutter
 
 This will output:
 
+> `Hello, Flutter!`
+
 A sample command-line application with an entrypoint in `bin/`, library code
 in `lib/`, and example unit test in `test/`.
