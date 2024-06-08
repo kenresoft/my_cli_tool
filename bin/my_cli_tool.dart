@@ -9,7 +9,8 @@ void main(List<String> arguments) {
     ..addFlag('help',
         abbr: 'h', negatable: false, help: 'Show this help message')
     ..addFlag('list', abbr: 'l', negatable: false, help: 'List all commands')
-    ..addOption('file', abbr: 'f', help: 'File path to write the message');
+    ..addOption('file', abbr: 'f', help: 'File path to write the message')
+    ..addOption('filename', abbr: 'F', help: 'File name to write the message');
 
   try {
     final argResults = parser.parse(arguments);
@@ -26,6 +27,7 @@ void main(List<String> arguments) {
       print('  --help, -h: Show this help message');
       print('  --list, -l: List all commands');
       print('  --file, -f: File path to write the message');
+      print('  --filename, -F: File name to write the message');
       return;
     }
 
@@ -33,9 +35,24 @@ void main(List<String> arguments) {
     final greeting = 'Hello, $name!';
     print(greeting);
 
-    if (argResults.wasParsed('file')) {
-      final filePath = argResults['file'] as String;
-      final absolutePath = path.absolute(filePath);
+    String? filePath;
+    if (argResults.wasParsed('file') && argResults.wasParsed('filename')) {
+      final directory = argResults['file'] as String;
+      final filename = argResults['filename'] as String;
+      filePath = path.join(directory, filename);
+    } else if (argResults.wasParsed('file')) {
+      filePath = argResults['file'] as String;
+    }
+
+    if (filePath != null) {
+      final absolutePath = path.normalize(path.absolute(filePath));
+
+      // Ensure the provided path is a file path, not a directory
+      if (Directory(absolutePath).existsSync()) {
+        print('Error: The provided path is a directory, not a file.');
+        return;
+      }
+
       final message = 'A simple command-line tool to greet users.';
 
       try {
