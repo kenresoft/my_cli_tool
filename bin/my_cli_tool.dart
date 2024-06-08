@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:args/args.dart';
+import 'package:path/path.dart' as path;
 import 'package:my_cli_tool/my_cli_tool.dart' as my_cli_tool;
 
 void main(List<String> arguments) {
@@ -6,30 +8,43 @@ void main(List<String> arguments) {
     ..addOption('name', abbr: 'n', defaultsTo: 'world', help: 'Name to greet')
     ..addFlag('help',
         abbr: 'h', negatable: false, help: 'Show this help message')
-    ..addFlag('list', abbr: 'l', negatable: false, help: 'List all commands');
+    ..addFlag('list', abbr: 'l', negatable: false, help: 'List all commands')
+    ..addOption('file', abbr: 'f', help: 'File path to write the message');
 
   try {
-    final args = parser.parse(arguments);
+    final argResults = parser.parse(arguments);
 
-    if (args['help'] as bool) {
+    if (argResults['help'] as bool) {
       print('Usage: my_cli_tool [options]');
       print(parser.usage);
       return;
     }
 
-    if (args['list'] as bool) {
+    if (argResults['list'] as bool) {
       print('Available commands:');
       print('  --name, -n: Name to greet');
       print('  --help, -h: Show this help message');
       print('  --list, -l: List all commands');
+      print('  --file, -f: File path to write the message');
       return;
     }
 
-    final name = args['name'] as String;
-    print('Hello, $name!');
-    // print(args['help'] as bool);
-    if (name == 'help') {
-      print(parser.usage);
+    final name = argResults['name'] as String;
+    final greeting = 'Hello, $name!';
+    print(greeting);
+
+    if (argResults.wasParsed('file')) {
+      final filePath = argResults['file'] as String;
+      final absolutePath = path.absolute(filePath);
+      final message = 'A simple command-line tool to greet users.';
+
+      try {
+        final file = File(absolutePath);
+        file.writeAsStringSync(message);
+        print('Message written to $absolutePath');
+      } catch (e) {
+        print('Error writing to file: $e');
+      }
     }
   } catch (e) {
     if (e is FormatException) {
