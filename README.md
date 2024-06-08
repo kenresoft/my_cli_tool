@@ -4,7 +4,7 @@ A simple command-line tool to greet users.
 
 ## Installation
 
-Install the tool globally using Dart:
+Install the tool globally using Dart by running the following command from any directory:
 
 ```sh
 dart pub global activate my_cli_tool
